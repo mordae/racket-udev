@@ -281,7 +281,8 @@
                            (udev-monitor-get-fd monitor)
                            "udev-monitor"
                            0)))
-    (wrap-evt in (lambda (in) monitor))))
+    (wrap-evt in (lambda (in)
+                   (udev-monitor-receive-device monitor)))))
 
 
 (define-setter-definer define-enumerate-setter _udev-enumerate-pointer)
