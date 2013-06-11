@@ -110,7 +110,7 @@
                      (hash/c symbol? (or/c #f string?)))
   (if list-entry
     (hash-set (udev-list-entry->hash (udev-list-entry-get-next list-entry))
-              (string->symbol (udev-list-entry-get-name list-entry))
+              (udev-list-entry-get-name list-entry)
               (udev-list-entry-get-value list-entry))
     '#hasheq()))
 
@@ -118,13 +118,13 @@
                  (-> (or/c #f udev-list-entry-pointer?) (set/c symbol?))
   (if list-entry
     (set-add (udev-list-entry->set (udev-list-entry-get-next list-entry))
-             (string->symbol (udev-list-entry-get-name list-entry)))
+             (udev-list-entry-get-name list-entry))
     (set)))
 
 (define/contract (udev-list-entry->list list-entry)
                  (-> (or/c #f udev-list-entry-pointer?) (listof string?))
   (if list-entry
-    (cons (udev-list-entry-get-name list-entry)
+    (cons (symbol->string (udev-list-entry-get-name list-entry))
           (udev-list-entry->list (udev-list-entry-get-next list-entry)))
     (list)))
 
