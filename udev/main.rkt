@@ -101,7 +101,7 @@
                    --> _udev-list-entry-pointer/null))
 
 (define-getter-definer define-list-entry-getter _udev-list-entry-pointer/null)
-(define-list-entry-getter udev-list-entry-get-name _string/utf-8)
+(define-list-entry-getter udev-list-entry-get-name _symbol)
 (define-list-entry-getter udev-list-entry-get-value _string/utf-8)
 
 
@@ -223,12 +223,12 @@
 
 (define-udev udev-device-get-sysattr-value
              (_fun _udev-device-pointer
-                   _string/utf-8
+                   _symbol
                    --> _string/utf-8))
 
 (define-udev udev-device-get-property-value
              (_fun _udev-device-pointer
-                   _string/utf-8
+                   _symbol
                    --> _string/utf-8))
 
 
