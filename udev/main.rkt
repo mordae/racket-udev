@@ -37,9 +37,11 @@
     (udev-device-new-from-syspath (force ctx) syspath)))
 
 
-(define/contract (device-changed-evt)
-                 (-> evt?)
+(define/contract (device-changed-evt #:subsystem (subsystem #f))
+                 (->* () (#:subsystem string?) evt?)
   (let ((monitor (udev-monitor-new-from-netlink (force ctx))))
+    (when subsystem
+      (udev-monitor-filter-add-match-subsystem-devtype monitor subsystem #f))
     (udev-monitor-enable-receiving! monitor)
     (wrap-evt (udev-monitor-evt monitor)
               (lambda (device)
