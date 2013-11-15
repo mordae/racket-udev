@@ -8,7 +8,8 @@
          ffi/unsafe/define
          racket/contract
          racket/provide
-         racket/set)
+         racket/set
+         throw)
 
 (provide (filtered-out
            (lambda (name)
@@ -21,7 +22,7 @@
            (all-defined-out)))
 
 
-(define-struct/contract (exn:fail:udev exn:fail) ())
+(define-struct (exn:fail:udev exn:fail) ())
 
 (define libudev (ffi-lib "libudev" '("1" "")))
 
@@ -45,16 +46,16 @@
 (define (with-finalizer result finalizer)
   (if result
     (register-finalizer result finalizer)
-    (raise (exn:fail:udev "udev call failed" (current-continuation-marks))))
+    (throw exn:fail:udev 'udev "call failed"))
   result)
 
 (define (check-result result)
   (unless (= 0 result)
-    (raise (exn:fail:udev "udev call failed" (current-continuation-marks)))))
+    (throw exn:fail:udev 'udev "call failed")))
 
 (define (with-checked-result result)
   (unless result
-    (raise (exn:fail:udev "udev call failed" (current-continuation-marks))))
+    (throw exn:fail:udev 'udev "call failed"))
   result)
 
 
