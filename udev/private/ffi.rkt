@@ -3,13 +3,17 @@
 ; FFI Bindings
 ;
 
-(require (for-syntax racket/base)
-         (rename-in ffi/unsafe (-> -->))
-         ffi/unsafe/define
-         racket/contract
+(require
+  (for-syntax racket/base))
+
+(require
+  (rename-in ffi/unsafe (-> -->)))
+
+(require racket/contract
          racket/provide
-         racket/set
-         throw)
+         racket/set)
+
+(require misc1/throw)
 
 (provide (filtered-out
            (lambda (name)
