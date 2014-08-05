@@ -20,6 +20,7 @@
     (device-path (-> device? (or/c #f string?)))
     (device-sys-name (-> device? (or/c #f string?)))
     (device-node (-> device? (or/c #f string?)))
+    (device-subsystem (-> device? (or/c #f symbol?)))
     (device-initialized? (-> device? boolean?))
 
     (device-properties (-> device? (hash/c symbol? string?)))
@@ -95,8 +96,28 @@
 (define (device-initialized? device)
   (udev-device-get-is-initialized (device-pointer device)))
 
+(define (schemify-symbol name)
+  (let ((str (symbol->string name)))
+    (string->symbol
+      (string-downcase
+        (regexp-replace* #rx"_" str "-")))))
+
+(define (device-properties/raw device)
+  (let ((pointer (device-pointer device)))
+    (for/hash (((name value)
+                (in-hash (udev-device-get-properties pointer))))
+      (values (schemify-symbol name) value))))
+
+(define (hash-remove-keys hash-table keys)
+  (if (null? keys) hash-table
+      (hash-remove-keys (hash-remove hash-table (car keys)) (cdr keys))))
+
 (define (device-properties device)
-  (udev-device-get-properties (device-pointer device)))
+  (hash-remove-keys (device-properties/raw device) '(tags subsystem)))
+
+(define (device-subsystem device)
+  (let ((subsystem (hash-ref (device-properties/raw device) 'subsystem #f)))
+    (and subsystem (string->symbol subsystem))))
 
 (define (device-links device)
   (udev-device-get-devlinks (device-pointer device)))
