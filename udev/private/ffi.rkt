@@ -129,7 +129,7 @@
              #:wrap (allocator udev-unref))
 
 (define-udev udev-device-unref
-             (_fun --> _udev-device-pointer)
+             (_fun _udev-device-pointer --> _void)
              #:c-id udev_device_unref
              #:wrap (releaser))
 
