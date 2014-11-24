@@ -44,7 +44,10 @@
 
 
 (struct device
-  (pointer))
+  (pointer)
+  #:methods gen:custom-write
+  ((define (write-proc self port mode)
+     (write `(device ,(device-sys-path self)) port))))
 
 
 (define (list-devices #:subsystems (subsystems null)
