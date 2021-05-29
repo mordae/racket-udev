@@ -8,7 +8,8 @@
 
 (require racket/set
          ffi/unsafe/define
-         ffi/unsafe/alloc)
+         ffi/unsafe/alloc
+         ffi/unsafe/port)
 
 (require misc1/throw)
 
@@ -52,21 +53,6 @@
 (define _dev_t _uint32)
 (define _byte/char
   (make-ctype _byte char->integer integer->char))
-
-
-(define-scheme scheme-socket-to-ports
-               (_fun _long
-                     _string/utf-8
-                     _int
-                     (in : (_ptr o _scheme))
-                     (out : (_ptr o _scheme))
-                     --> _void
-                     --> (begin
-                           (register-finalizer in close-input-port)
-                           (register-finalizer out close-output-port)
-                           (values in out)))
-               #:c-id scheme_socket_to_ports)
-
 
 (define-cpointer-type _udev-pointer)
 (define-cpointer-type _udev-list-entry-pointer)
@@ -280,9 +266,10 @@
 
 
 (define (udev-monitor-evt monitor)
-  (let-values (((in out) (scheme-socket-to-ports
+  (let-values (((in out) (unsafe-socket->port
                            (udev-monitor-get-fd monitor)
-                           "udev-monitor" 0)))
+                           "udev-monitor"
+                           '(no-close))))
     (wrap-evt in (λ (in)
                    (udev-monitor-receive-device monitor)))))
 
